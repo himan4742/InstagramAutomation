@@ -4,8 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions
-from selenium.common.exceptions import TimeoutException
-
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 #name = input("Enter your username - ")
 #passW = input("Enter your password - ")
@@ -39,6 +38,7 @@ class Insta_Login(object):
             password = self.driver.find_element_by_xpath('//*[@id="loginForm"]/div/div[2]/div/label/input')
             password.send_keys(self.passW)
             self.driver.find_element_by_xpath('//*[@id="loginForm"]/div/div[3]').click()
+            self.skip_notification()
 
     def skip_notification(self):
         """."""
@@ -73,17 +73,33 @@ class Insta_Login(object):
         """."""
 
         try:
-            option = WebDriverWait(self.driver, 5).until(
+            option = WebDriverWait(self.driver, 10).until(
                     expected_conditions.visibility_of_element_located(
                         (By.XPATH, '//*[@id="react-root"]/section/nav/div[2]/div/div/div[3]/div/div[5]/span/img')))
-            option.click()
-        except TimeoutException:
-            option.click()
+        except (TimeoutException, NoSuchElementException):
+            self._go_to_settings()
         else:
-            setting_option = WebDriverWait(self.driver, 5).until(
+            option.click()
+            setting_option = WebDriverWait(self.driver, 10).until(
                 expected_conditions.visibility_of_element_located(
-                    (By.XPATH, '//*[@id="f158fa56c6ddddc"]/div/div/div')))
+                    (By.XPATH, '//*[@id="react-root"]/section/nav/div[2]/div/div/div[3]/div/div[5]/div[2]/div[2]/div[2]/a[3]/div')))
             setting_option.click()
+
+    def logout(self):
+        """."""
+
+        try:
+            option = WebDriverWait(self.driver, 10).until(
+                    expected_conditions.visibility_of_element_located(
+                        (By.XPATH, '//*[@id="react-root"]/section/nav/div[2]/div/div/div[3]/div/div[5]/span/img')))
+        except (TimeoutException, NoSuchElementException):
+            self.logout()
+        else:
+            option.click()
+            logout = WebDriverWait(self.driver, 20).until(
+                    expected_conditions.visibility_of_element_located(
+                        (By.CSS_SELECTOR, '#f992869cc4a5f8 > div > div > div')))
+            logout.click()
 
     def parse(self):
         """."""
@@ -91,8 +107,8 @@ class Insta_Login(object):
         self.driver.set_window_size(**self.BROWSER_WINDOW_DIMENSIONS)
         self.driver.get(self.INSTAGRAM_URL)
         self.login()
-        self.skip_notification()
         #self.search()
+        self.logout()
         self._go_to_settings()
 
 
