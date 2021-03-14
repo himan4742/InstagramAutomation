@@ -1,3 +1,5 @@
+from Config_File import name, passW
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -7,8 +9,6 @@ from selenium.common.exceptions import TimeoutException
 
 #name = input("Enter your username - ")
 #passW = input("Enter your password - ")
-name = 'himanshu4742'
-passW = '7017821983hH@'
 
 
 class Insta_Login(object):
@@ -72,15 +72,18 @@ class Insta_Login(object):
     def _go_to_settings(self):
         """."""
 
-        option = WebDriverWait(self.driver, 5).until(
-                expected_conditions.visibility_of_element_located(
-                    (By.XPATH, '//*[@id="react-root"]/section/nav/div[2]/div/div/div[3]/div/div[5]/span/img')))
-        option.click()
-
-        setting_option = WebDriverWait(self.driver, 5).until(
+        try:
+            option = WebDriverWait(self.driver, 5).until(
+                    expected_conditions.visibility_of_element_located(
+                        (By.XPATH, '//*[@id="react-root"]/section/nav/div[2]/div/div/div[3]/div/div[5]/span/img')))
+            option.click()
+        except TimeoutException:
+            option.click()
+        else:
+            setting_option = WebDriverWait(self.driver, 5).until(
                 expected_conditions.visibility_of_element_located(
                     (By.XPATH, '//*[@id="f158fa56c6ddddc"]/div/div/div')))
-        setting_option.click()
+            setting_option.click()
 
     def parse(self):
         """."""
@@ -89,8 +92,8 @@ class Insta_Login(object):
         self.driver.get(self.INSTAGRAM_URL)
         self.login()
         self.skip_notification()
-        self.search()
-        #self._go_to_settings()
+        #self.search()
+        self._go_to_settings()
 
 
 himanshu = Insta_Login(name, passW)
